@@ -42,12 +42,28 @@ mvn test -Dtest=GraphQlTest
    и отсутствие errors.
 5. GraphQL mutation CreatePerson: проверяются HTTP 200, наличие id,
    значения name и age, отсутствие errors.
+6. Параметризованная проверка отказа во входе с неверным паролем:
+   пароль с лишним символом и пароль с изменённым регистром.
 
 Идентификаторы созданных ресурсов и токены извлекаются из ответов
 во время выполнения тестов. Для REST-запросов cookies сохраняются
 в пределах одного теста. Общие настройки вынесены в ApiTestBase.
 
 При падении проверки выводятся запрос и ответ.
+
+## Дополнительный негативный сценарий
+
+Тест `shouldRejectLoginWithIncorrectPassword` отправляет запрос
+`POST /auth/login` для пользователя Bret с двумя неверными паролями:
+`Password@1234` и `password@123`.
+
+Для каждого варианта проверяются HTTP 401, поле status со значением 401,
+сообщение `Invalid username or password.` в поле error и отсутствие
+полей access_token и refresh_token в ответе.
+
+Сценарий проверяет отказ в выдаче токенов при неверных учётных данных.
+Обязательный негативный тест отдельно проверяет отказ в доступе к
+`/auth/me` без токена.
 
 ## Учётные данные
 
@@ -62,7 +78,11 @@ Invalid username or password. С Password@123 вход выполнен успе
 
 `postman/api-testing-homework.postman_collection.json`
 
-Для выполнения в Postman:
+Получение SSE-событий проверено вручную в Bruno: получены приветствия
+Hi, Bonjour и Hola. Коллекция экспортирована в формат
+Postman Collection v2.1.
+
+Для повторения запроса в Postman:
 
 1. Импортировать коллекцию.
 2. Открыть GraphQL Subscription — Greetings (SSE).
@@ -77,4 +97,4 @@ Invalid username or password. С Password@123 вход выполнен успе
 }
 ```
 
-Subscription выполняется вручную и не входит в запуск mvn test.
+Subscription выполняется вручную и не входит в запуск `mvn test`.
