@@ -1,0 +1,22 @@
+name: API tests in Docker
+
+on:
+  push:
+
+permissions:
+  contents: read
+
+jobs:
+  api-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Получить исходный код
+        uses: actions/checkout@v7
+
+      - name: Собрать Docker image
+        run: docker build -t api-test .
+
+      - name: Запустить API-тест в контейнере
+        run: docker run --rm api-test
